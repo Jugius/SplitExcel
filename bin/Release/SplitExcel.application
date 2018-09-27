@@ -14,14 +14,14 @@
     <framework targetVersion="4.6" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="SplitExcel.exe.manifest" size="6596">
+    <dependentAssembly dependencyType="install" codebase="SplitExcel.exe.manifest" size="7102">
       <assemblyIdentity name="SplitExcel.exe" version="1.1.0.1" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="x86" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>t3saMSrxwORtPyYyj7ro+86GQz9XvXAqlhERAlOxLzA=</dsig:DigestValue>
+        <dsig:DigestValue>6u+JT0m0BT7K6sK6+mIuU5y1R2A0dYl2fx3BseyBhLg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
