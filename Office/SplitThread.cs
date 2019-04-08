@@ -1,76 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
 
 
 namespace SplitExcel.Office
 {
-    internal delegate void NewFileSavedEventHandler(string itemName);
-    internal delegate void ThreadFinishedEventHandler(SplitThread thread);
-    internal class SplitThread : IDisposable
-    {
-        internal event NewFileSavedEventHandler NewFileSaved;
-        internal event ThreadFinishedEventHandler ThreadFinished;
+    internal class SplitThread : IExcelProcessor
+    {               
+        private SplitFileParameters Parameters { get; }
 
-        private Excel.Application xlApp = null;
-        private List<string> SplitValues;
-        SplitFileParameters SplitParameters;
-
-        internal SplitThread(List<string> splitvalues, SplitFileParameters splitParameters)
+        internal SplitThread(SplitFileParameters splitParameters)
         {
-            SplitValues = splitvalues;
-            SplitParameters = splitParameters;
+            Parameters = splitParameters;
         }
-        internal void SplitExcelFile()
+        internal void SplitExcelFile(object sender, DoWorkEventArgs e)
         {
-            Excel.Workbook xlWorkBook = null;
-            Excel.Worksheet xlWorkSheet = null; 
+            BackgroundWorker bw = sender as BackgroundWorker;
+            List<string> splitValues = e.Argument as List<string>;            
 
-            string fileExt = System.IO.Path.GetExtension(SplitParameters.FilePath);
-            string filename = System.IO.Path.GetFileNameWithoutExtension(SplitParameters.FilePath);
-            string fileDir = System.IO.Path.GetDirectoryName(SplitParameters.FilePath);
-            System.Globalization.CultureInfo oldCI = System.Threading.Thread.CurrentThread.CurrentCulture;
+            string fileExt = System.IO.Path.GetExtension(Parameters.FilePath);
+            string filename = System.IO.Path.GetFileNameWithoutExtension(Parameters.FilePath);
+            string fileDir = System.IO.Path.GetDirectoryName(Parameters.FilePath);
 
             try
             {
-                System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
-                xlApp = new Excel.Application();
-                xlApp.UserControl = false;
-                xlApp.ScreenUpdating = false;
-                xlApp.EnableEvents = false;
-                xlApp.DisplayAlerts = false;
-                xlApp.Visible = false;
+                InitializeExcelApplication();
+                e.Result = this;
 
                 object val = string.Empty;
 
-                for (int s = 0; s < SplitValues.Count; s++)
+                foreach (string splitVal in splitValues)
                 {
-                    xlWorkBook = xlApp.Workbooks.Open(SplitParameters.FilePath, ReadOnly: true);
-                    xlWorkSheet = (Excel.Worksheet)xlWorkBook.Sheets[SplitParameters.SheetIndex];
-
-                    for (int i = SplitParameters.RowEnd; i >= SplitParameters.RowBegin; i--)
+                    if (bw.CancellationPending)
                     {
-                        val = xlWorkSheet.Range[SplitParameters.ColumnSplit + i].Value;
-                        if (val == null || val.ToString().ToUpper().Trim() != SplitValues[s])
-                            ((Excel.Range)xlWorkSheet.Rows[i, System.Reflection.Missing.Value]).Delete(Excel.XlDeleteShiftDirection.xlShiftUp);
+                        e.Cancel = true;
+                        break;
                     }
-                    xlWorkBook.SaveAs(fileDir + @"/" + ParseStringToFileName(filename + "_" + SplitValues[s]) + fileExt);
-                    xlWorkBook.Close();
+                    this.xlWorkBook = IExcelProcessor.OpenWorkbook(this.xlApp, this.Parameters.FilePath, true);
+                    this.xlWorkSheet = (Excel.Worksheet)xlWorkBook.Sheets[Parameters.SheetIndex];
 
-                    NewFileSaved?.Invoke(SplitValues[s]);
+                    for (int i = Parameters.RowEnd; i >= Parameters.RowBegin; i--)
+                    {
+                        val = xlWorkSheet.Range[Parameters.ColumnSplit + i].Value;
+                        if (val == null || val.ToString().ToUpper().Trim() != splitVal)
+                            ((Excel.Range)xlWorkSheet.Rows[i, System.Reflection.Missing.Value]).Delete(Excel.XlDeleteShiftDirection.xlShiftUp);
+                        bw.ReportProgress(0);
+                    }
+                    xlWorkBook.SaveAs(fileDir + @"/" + ParseStringToFileName(filename + "_" + splitVal) + fileExt);
+                    xlWorkBook.Close();
+                    bw.ReportProgress(0, splitVal);
                 }
 
-                Release(xlWorkSheet);
-                Release(xlWorkBook);
-
-                xlApp.UserControl = true;
-                xlApp.EnableEvents = true;
-                xlApp.DisplayAlerts = true;
-
-                xlApp.Quit();
-                ThreadFinished?.Invoke(this);
+                ExitExcelApplication();  
             }
-            catch (Exception ex) { throw ex; }
+            catch
+            {
+                if (xlWorkBook != null)
+                    xlWorkBook.Close();
+
+                if (xlApp != null)
+                    ExitExcelApplication();
+
+                throw;
+            }
         }
         private string ParseStringToFileName(string sourse)
         {
@@ -85,34 +78,6 @@ namespace SplitExcel.Office
             if (str.Length > 150)
                 str = str.Substring(0, 150);
             return str;
-        }
-
-        #region Disposing Logic
-        private bool iDisposed = false;
-        public void Dispose()
-        {
-            if (!iDisposed)
-            {
-                iDisposed = true;
-                Release(xlApp);
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.SuppressFinalize(this); //говорим сборщику мусора, что наш объект уже освободил ресурсы
-            }
-
-        }
-        private void Release(object sender)
-        {
-            try
-            {
-                if (sender != null)
-                {
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(sender);
-                    sender = null;
-                }
-            }
-            catch (Exception) { sender = null; }
-        }
-        #endregion
+        }        
     }
 }

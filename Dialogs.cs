@@ -16,28 +16,8 @@ namespace SplitExcel
             if (f.ShowDialog() == DialogResult.OK)
                 return f.FileName;
             return null;
-        }
-        internal static ExcelBook GetExcelFileInformation(string filePath)
-        {
-            string s = System.IO.Path.GetExtension(filePath).ToLower();
-            try
-            {
-                if (!(s == ".xls" || s == ".xlsx" || s == ".xlsm"))
-                    throw new Exception($"Это не файл Excel! Расширение - {s}.\n{filePath}");
-
-                using (Office.UsingExcel excel = new Office.UsingExcel())
-                    return excel.ReadExcelFile(filePath);
-            }
-            catch (Exception ex) { throw ex; }
-        }
-        internal static List<string> ReadSplitValuesList(SplitFileParameters splParams)
-        {
-            try {
-                using (Office.UsingExcel usXl = new Office.UsingExcel())
-                    return usXl.GetSplitValues(splParams);
-            }
-            catch (Exception ex) { throw ex; }
-        }
+        }        
+        
         internal static List<List<T>> SplitList<T>(List<T> source, bool UseMultithreading)
         {
             int sourseCount = source.Count;

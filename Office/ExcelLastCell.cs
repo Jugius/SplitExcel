@@ -33,20 +33,5 @@ namespace SplitExcel.Office
             return columnName;
         }
     }
-    internal class SplitFileParameters
-    {
-        internal string FilePath { get; set; }
-        internal int SheetIndex { get; set; }
-        internal string ColumnSplit { get; set; }
-        internal int RowBegin { get; set; }
-        internal int RowEnd { get; set; }
-        internal SplitFileParameters(string filePath,int sheetIndex, string columnSplit, int rowBegin, int rowEnd)
-        {
-            this.FilePath = filePath;
-            this.SheetIndex = sheetIndex;
-            this.ColumnSplit = columnSplit;
-            this.RowBegin = rowBegin;
-            this.RowEnd = rowEnd;
-        }
-    }    
+    
 }
