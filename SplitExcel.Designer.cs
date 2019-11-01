@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.chkShowNumbers = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -40,14 +41,6 @@
             this.lblStatus = new System.Windows.Forms.Label();
             this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.btnStart = new System.Windows.Forms.Button();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.btnOpenFile = new System.Windows.Forms.ToolStripButton();
-            this.btnRefresh = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.mnuUseMultiThreads = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.mnuShowAboutDialog = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblFileName = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -55,11 +48,27 @@
             this.lblNumberOfColumns = new System.Windows.Forms.Label();
             this.cmbSheets = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.btnSettings = new System.Windows.Forms.Button();
+            this.btnAbout = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnOpenFile = new System.Windows.Forms.Button();
+            this.mnuSettings = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuUseMultiThreads = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.mnuAbout = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuSendLetter = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.mnuShowAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuCheckUpdates = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.mnuSettings.SuspendLayout();
+            this.mnuAbout.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox3
@@ -73,7 +82,7 @@
             this.groupBox3.Controls.Add(this.cmbSplitColumn);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox3.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.groupBox3.Location = new System.Drawing.Point(5, 149);
+            this.groupBox3.Location = new System.Drawing.Point(5, 151);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(291, 111);
             this.groupBox3.TabIndex = 3;
@@ -155,7 +164,7 @@
             this.groupBox4.Controls.Add(this.pbProgress);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox4.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.groupBox4.Location = new System.Drawing.Point(5, 260);
+            this.groupBox4.Location = new System.Drawing.Point(5, 262);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(291, 68);
             this.groupBox4.TabIndex = 4;
@@ -191,95 +200,11 @@
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
-            // toolStrip1
-            // 
-            this.toolStrip1.AutoSize = false;
-            this.toolStrip1.BackColor = System.Drawing.Color.White;
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnOpenFile,
-            this.btnRefresh,
-            this.toolStripSeparator3,
-            this.toolStripDropDownButton1});
-            this.toolStrip1.Location = new System.Drawing.Point(5, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(291, 30);
-            this.toolStrip1.TabIndex = 6;
-            this.toolStrip1.Text = "toolStrip1";
-            // 
-            // btnOpenFile
-            // 
-            this.btnOpenFile.AutoSize = false;
-            this.btnOpenFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnOpenFile.Image = global::SplitExcel.Properties.Resources.open_file_icon_24;
-            this.btnOpenFile.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnOpenFile.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnOpenFile.Name = "btnOpenFile";
-            this.btnOpenFile.Size = new System.Drawing.Size(28, 28);
-            this.btnOpenFile.Text = "Открыть файл";
-            this.btnOpenFile.Click += new System.EventHandler(this.OpenFile);
-            // 
-            // btnRefresh
-            // 
-            this.btnRefresh.AutoSize = false;
-            this.btnRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnRefresh.Image = global::SplitExcel.Properties.Resources.refresh_icon_24;
-            this.btnRefresh.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(28, 28);
-            this.btnRefresh.Text = "Перезагрузить файл";
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 30);
-            // 
-            // toolStripDropDownButton1
-            // 
-            this.toolStripDropDownButton1.AutoSize = false;
-            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuUseMultiThreads,
-            this.toolStripSeparator1,
-            this.mnuShowAboutDialog});
-            this.toolStripDropDownButton1.Image = global::SplitExcel.Properties.Resources.preferences_icon_24;
-            this.toolStripDropDownButton1.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(42, 28);
-            this.toolStripDropDownButton1.Text = "Настройки";
-            // 
-            // mnuUseMultiThreads
-            // 
-            this.mnuUseMultiThreads.BackColor = System.Drawing.SystemColors.Control;
-            this.mnuUseMultiThreads.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.mnuUseMultiThreads.Name = "mnuUseMultiThreads";
-            this.mnuUseMultiThreads.Size = new System.Drawing.Size(261, 30);
-            this.mnuUseMultiThreads.Text = "Использовать многопоточность";
-            this.mnuUseMultiThreads.ToolTipText = "Ускоряет обработку для больших файлов, но иногда может вызвать ошибку.";
-            this.mnuUseMultiThreads.Click += new System.EventHandler(this.mnuUseMultiThreads_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(258, 6);
-            // 
-            // mnuShowAboutDialog
-            // 
-            this.mnuShowAboutDialog.Image = global::SplitExcel.Properties.Resources.information_icon_24;
-            this.mnuShowAboutDialog.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.mnuShowAboutDialog.Name = "mnuShowAboutDialog";
-            this.mnuShowAboutDialog.Size = new System.Drawing.Size(261, 30);
-            this.mnuShowAboutDialog.Text = "О программе";
-            this.mnuShowAboutDialog.Click += new System.EventHandler(this.mnuAbout_Click);
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.lblFileName);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(5, 30);
+            this.panel1.Location = new System.Drawing.Point(5, 32);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(291, 27);
             this.panel1.TabIndex = 47;
@@ -302,7 +227,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.groupBox1.Location = new System.Drawing.Point(5, 57);
+            this.groupBox1.Location = new System.Drawing.Point(5, 59);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(291, 92);
             this.groupBox1.TabIndex = 48;
@@ -340,6 +265,7 @@
             this.cmbSheets.Name = "cmbSheets";
             this.cmbSheets.Size = new System.Drawing.Size(171, 25);
             this.cmbSheets.TabIndex = 6;
+            this.toolTip.SetToolTip(this.cmbSheets, "Выберите лист");
             this.cmbSheets.ValueMember = "Index";
             // 
             // label2
@@ -352,6 +278,135 @@
             this.label2.TabIndex = 7;
             this.label2.Text = "Активный лист:";
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.btnSettings);
+            this.panel2.Controls.Add(this.btnAbout);
+            this.panel2.Controls.Add(this.btnRefresh);
+            this.panel2.Controls.Add(this.btnOpenFile);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(5, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Padding = new System.Windows.Forms.Padding(1);
+            this.panel2.Size = new System.Drawing.Size(291, 32);
+            this.panel2.TabIndex = 51;
+            // 
+            // btnSettings
+            // 
+            this.btnSettings.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnSettings.FlatAppearance.BorderSize = 0;
+            this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSettings.Image = global::SplitExcel.Properties.Resources.preferences_icon_24;
+            this.btnSettings.Location = new System.Drawing.Point(230, 1);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Size = new System.Drawing.Size(30, 30);
+            this.btnSettings.TabIndex = 4;
+            this.toolTip.SetToolTip(this.btnSettings, "Настройки");
+            this.btnSettings.UseVisualStyleBackColor = true;
+            this.btnSettings.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnSettings_MouseDown);
+            // 
+            // btnAbout
+            // 
+            this.btnAbout.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnAbout.FlatAppearance.BorderSize = 0;
+            this.btnAbout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAbout.Image = global::SplitExcel.Properties.Resources.information_icon_24;
+            this.btnAbout.Location = new System.Drawing.Point(260, 1);
+            this.btnAbout.Name = "btnAbout";
+            this.btnAbout.Size = new System.Drawing.Size(30, 30);
+            this.btnAbout.TabIndex = 3;
+            this.toolTip.SetToolTip(this.btnAbout, "О программе");
+            this.btnAbout.UseVisualStyleBackColor = true;
+            this.btnAbout.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnAbout_MouseDown);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnRefresh.FlatAppearance.BorderSize = 0;
+            this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRefresh.Image = global::SplitExcel.Properties.Resources.refresh_icon_24;
+            this.btnRefresh.Location = new System.Drawing.Point(31, 1);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(30, 30);
+            this.btnRefresh.TabIndex = 1;
+            this.toolTip.SetToolTip(this.btnRefresh, "Перезагрузить информацию о файле");
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // btnOpenFile
+            // 
+            this.btnOpenFile.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnOpenFile.FlatAppearance.BorderSize = 0;
+            this.btnOpenFile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnOpenFile.Image = global::SplitExcel.Properties.Resources.open_file_icon_24;
+            this.btnOpenFile.Location = new System.Drawing.Point(1, 1);
+            this.btnOpenFile.Name = "btnOpenFile";
+            this.btnOpenFile.Size = new System.Drawing.Size(30, 30);
+            this.btnOpenFile.TabIndex = 0;
+            this.toolTip.SetToolTip(this.btnOpenFile, "Открыть файл");
+            this.btnOpenFile.UseVisualStyleBackColor = true;
+            this.btnOpenFile.Click += new System.EventHandler(this.OpenFile);
+            // 
+            // mnuSettings
+            // 
+            this.mnuSettings.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuUseMultiThreads});
+            this.mnuSettings.Name = "mnuSettings";
+            this.mnuSettings.Size = new System.Drawing.Size(254, 26);
+            // 
+            // mnuUseMultiThreads
+            // 
+            this.mnuUseMultiThreads.Name = "mnuUseMultiThreads";
+            this.mnuUseMultiThreads.Size = new System.Drawing.Size(253, 22);
+            this.mnuUseMultiThreads.Text = "Использовать многопоточность";
+            this.mnuUseMultiThreads.ToolTipText = "Режет файл в несколько потоков, ускоряя процесс.\r\nИногда вызывает ошибку.\r\nРекоме" +
+    "ндуется использовать с большими файлами.";
+            this.mnuUseMultiThreads.Click += new System.EventHandler(this.mnuUseMultiThreads_Click);
+            // 
+            // mnuAbout
+            // 
+            this.mnuAbout.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuHelp,
+            this.mnuSendLetter,
+            this.mnuCheckUpdates,
+            this.toolStripSeparator1,
+            this.mnuShowAbout});
+            this.mnuAbout.Name = "mnuSettings";
+            this.mnuAbout.Size = new System.Drawing.Size(205, 120);
+            // 
+            // mnuHelp
+            // 
+            this.mnuHelp.Name = "mnuHelp";
+            this.mnuHelp.Size = new System.Drawing.Size(204, 22);
+            this.mnuHelp.Text = "Справка";
+            this.mnuHelp.Click += new System.EventHandler(this.mnuHelp_Click);
+            // 
+            // mnuSendLetter
+            // 
+            this.mnuSendLetter.Name = "mnuSendLetter";
+            this.mnuSendLetter.Size = new System.Drawing.Size(204, 22);
+            this.mnuSendLetter.Text = "Обратная связь";
+            this.mnuSendLetter.Click += new System.EventHandler(this.mnuSendLetter_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(201, 6);
+            // 
+            // mnuShowAbout
+            // 
+            this.mnuShowAbout.Name = "mnuShowAbout";
+            this.mnuShowAbout.Size = new System.Drawing.Size(204, 22);
+            this.mnuShowAbout.Text = "О программе";
+            this.mnuShowAbout.Click += new System.EventHandler(this.mnuShowAbout_Click);
+            // 
+            // mnuCheckUpdates
+            // 
+            this.mnuCheckUpdates.Name = "mnuCheckUpdates";
+            this.mnuCheckUpdates.Size = new System.Drawing.Size(204, 22);
+            this.mnuCheckUpdates.Text = "Проверить обновления";
+            this.mnuCheckUpdates.Click += new System.EventHandler(this.MnuCheckUpdates_Click);
+            // 
             // SplitExcel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -363,7 +418,7 @@
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.toolStrip1);
+            this.Controls.Add(this.panel2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -376,12 +431,13 @@
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.mnuSettings.ResumeLayout(false);
+            this.mnuAbout.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -399,12 +455,6 @@
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.CheckBox chkShowNumbers;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton btnOpenFile;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
-        private System.Windows.Forms.ToolStripMenuItem mnuUseMultiThreads;
-        private System.Windows.Forms.ToolStripButton btnRefresh;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label lblFileName;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -412,7 +462,19 @@
         private System.Windows.Forms.Label lblNumberOfColumns;
         private System.Windows.Forms.ComboBox cmbSheets;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button btnSettings;
+        private System.Windows.Forms.Button btnAbout;
+        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button btnOpenFile;
+        private System.Windows.Forms.ContextMenuStrip mnuSettings;
+        private System.Windows.Forms.ToolStripMenuItem mnuUseMultiThreads;
+        private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.ContextMenuStrip mnuAbout;
+        private System.Windows.Forms.ToolStripMenuItem mnuHelp;
+        private System.Windows.Forms.ToolStripMenuItem mnuSendLetter;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem mnuShowAboutDialog;
+        private System.Windows.Forms.ToolStripMenuItem mnuShowAbout;
+        private System.Windows.Forms.ToolStripMenuItem mnuCheckUpdates;
     }
 }

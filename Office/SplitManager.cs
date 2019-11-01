@@ -9,7 +9,7 @@ namespace SplitExcel.Office
     internal class SplitManager
     {
         internal event RunWorkerCompletedEventHandler SpliterCompleted;
-        internal event ProgressChangedEventHandler ProgressChanged;
+        internal event ProgressChangedEventHandler ProgressChanged;        
 
         SplitFileParameters Parameters;
         private bool UseMultiThreads = false;
@@ -75,7 +75,7 @@ namespace SplitExcel.Office
                 this.ticker.ProgressChanged += Ticker_ProgressChanged;
                 
 
-                List<List<string>> splittedList = Dialogs.SplitList(list, this.UseMultiThreads);
+                List<List<string>> splittedList = Extentions.SplitList(list, this.UseMultiThreads);
                 this.ThreadsNumber = splittedList.Count;
                 this.IsBusy = true;
                 workers = new List<BackgroundWorker>();
@@ -101,7 +101,7 @@ namespace SplitExcel.Office
 
             if (this.IsBusy)
             {
-                this.ProgressChanged?.Invoke(null, new ProgressChangedEventArgs(-1, "Ожидание завершение потоков..."));
+                this.ProgressChanged?.Invoke(null, new ProgressChangedEventArgs(-1, "Ожидание завершения потоков..."));
 
                 foreach (var worker in this.workers)
                 {
@@ -146,7 +146,7 @@ namespace SplitExcel.Office
             if (ThreadsFinished == ThreadsNumber)
             {
                 Exception err = string.IsNullOrEmpty(this.errorMessage) ? null : new Exception(this.errorMessage);
-                this.SpliterCompleted(null, new RunWorkerCompletedEventArgs(null, err, this.IsCancelled));                
+                this.SpliterCompleted(null, new RunWorkerCompletedEventArgs(this.Parameters, err, this.IsCancelled));                
             }                
         }
 

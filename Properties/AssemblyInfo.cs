@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SplitExcel")]
 [assembly: AssemblyDescription("Easy way to split Excel file by any column")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("ooHelp")]
 [assembly: AssemblyProduct("SplitExcel")]
 [assembly: AssemblyCopyright("Copyright © 2017 by Andrew Slusarev")]
 [assembly: AssemblyTrademark("")]
@@ -33,5 +33,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.2.0.0")]
-[assembly: AssemblyFileVersion("1.3.0.0")]
+[assembly: AssemblyFileVersion("1.5.17.0")]
 //[assembly: AssemblyFileVersion("1.1.1.0")]

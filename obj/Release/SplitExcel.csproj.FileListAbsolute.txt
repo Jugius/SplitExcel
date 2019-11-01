@@ -12,5 +12,8 @@ D:\Documents\Programming\SplitExcel\SplitExcel\obj\Release\SplitExcel.applicatio
 D:\Documents\Programming\SplitExcel\SplitExcel\bin\Release\SplitExcel.exe.config
 D:\Documents\Programming\SplitExcel\SplitExcel\obj\Release\SplitExcel.SplitExcel.resources
 D:\Documents\Programming\SplitExcel\SplitExcel\obj\Release\SplitExcel.About.resources
-D:\Documents\Programming\SplitExcel\SplitExcel\obj\Release\SplitExcel.csproj.ResolveComReference.cache
-D:\Documents\Programming\SplitExcel\SplitExcel\obj\Release\SplitExcel.csprojResolveAssemblyReference.cache
+D:\Documents\Programming\SplitExcel\SplitExcel\bin\Release\Updater.exe
+D:\Documents\Programming\SplitExcel\SplitExcel\bin\Release\Updater.pdb
+D:\Documents\Programming\SplitExcel\SplitExcel\bin\Release\Updater.exe.config
+D:\Documents\Programming\SplitExcel\SplitExcel\obj\Release\SplitExcel.csprojAssemblyReference.cache
+D:\Documents\Programming\SplitExcel\SplitExcel\obj\Release\SplitExcel.csproj.CopyComplete

@@ -7,7 +7,7 @@ namespace SplitExcel.Office
 {
     internal class UsingExcel : IExcelProcessor, IDisposable
     {           
-        internal ExcelFileInfo ReadExcelFile(string fileName)
+        internal ExcelFileInfo ReadExcelFileInfo(string fileName)
         {
             try
             {

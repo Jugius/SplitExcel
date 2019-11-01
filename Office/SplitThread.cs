@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -52,7 +51,7 @@ namespace SplitExcel.Office
                     bw.ReportProgress(0, splitVal);
                 }
 
-                ExitExcelApplication();  
+                ExitExcelApplication();
             }
             catch
             {
@@ -63,6 +62,10 @@ namespace SplitExcel.Office
                     ExitExcelApplication();
 
                 throw;
+            }
+            finally
+            {
+                ReleaseUnmanaged();
             }
         }
         private string ParseStringToFileName(string sourse)

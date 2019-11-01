@@ -1,23 +1,11 @@
-﻿using SplitExcel.Office;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 
 namespace SplitExcel
 {
-    internal static class Dialogs
+    internal static class Extentions
     {
-        internal static string OpenExcelFileDialog()
-        {
-            OpenFileDialog f = new OpenFileDialog();
-            f.Filter = "Файлы Excel|*.xls;*.xlsx;*.xlsm";
-            f.Title = "Выберите файл";
-            if (f.ShowDialog() == DialogResult.OK)
-                return f.FileName;
-            return null;
-        }        
-        
         internal static List<List<T>> SplitList<T>(List<T> source, bool UseMultithreading)
         {
             int sourseCount = source.Count;

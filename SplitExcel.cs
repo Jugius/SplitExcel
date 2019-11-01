@@ -1,30 +1,45 @@
 ﻿using SplitExcel.Office;
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace SplitExcel
 {
     public partial class SplitExcel : Form
     {
         private Office.ExcelFileInfo _openedExcelFile = null;
+        private SplitFileParameters PrevFinishedParameters = null;
+        private bool WaitForFinishingToExit = false;
+
+        private readonly Updater.Updater _updater;
+
         SplitManager manager;
+
+
         private Office.ExcelFileInfo OpenedExcelFile
         {
             get { return _openedExcelFile; }
             set {
                 _openedExcelFile = value;
+                lblStatus.Text = null;
+                groupBox4.Enabled = false;
+                pbProgress.Value = 0;
                 if (value == null)
                 {
                     lblFileName.Text = null;
                     SetControlsEnabled(false);
+                    cmbSheets.SelectedValueChanged -= new System.EventHandler(this.cmbSheets_SelectedValueChanged);
+                    cmbSheets.Text = cmbSplitColumn.Text = txtSplitRowBegin.Text = txtSplitRowEnd.Text = null;
+                    lblNumberOfColumns.Text = "Столбцов:";
+                    lblNumberOfRows.Text = "Строк:";
                 }
                 else
                 {
                     lblFileName.Text = System.IO.Path.GetFileName(value.Path);
-                    lblFileName.ForeColor = System.Drawing.SystemColors.Highlight;
                     cmbSheets.SelectedValueChanged -= new System.EventHandler(this.cmbSheets_SelectedValueChanged);
                     cmbSheets.DataSource = value.Sheets;
                     cmbSheets.SelectedValueChanged += new System.EventHandler(this.cmbSheets_SelectedValueChanged);
@@ -37,60 +52,54 @@ namespace SplitExcel
         {
             InitializeComponent();
             this.Icon = Properties.Resources.Excel_icon;
-            toolStrip1.Renderer = new ToolStripRenderer();
             OpenedExcelFile = null;
-            Updater.Updater upd = new Updater.Updater(this);
-            upd.DoUpdate();
+            _updater = new Updater.Updater(this);
+            _updater.DoUpdate( global::Updater.UpdateMethod.Automatic);
         }
         public SplitExcel(string filePath) : this()
         {
             ReadExcelFileInfo(filePath);
         }
-        private void ReadExcelFileInfo(string path)
+        private async void ReadExcelFileInfo(string path)
         {
-            BackgroundWorker bw_ExcelReader = new BackgroundWorker();
-            bw_ExcelReader.DoWork += Bw_ExcelReader_DoWork;
-            bw_ExcelReader.RunWorkerCompleted += Bw_ExcelReader_RunWorkerCompleted;
-            bw_ExcelReader.RunWorkerAsync(path);            
-        }
-        private void Bw_ExcelReader_DoWork(object sender, DoWorkEventArgs e)
-        {
-            string filePath = (string)e.Argument;
-            string ext = System.IO.Path.GetExtension(filePath).ToLower();
-            if (!(ext == ".xls" || ext == ".xlsx" || ext == ".xlsm"))
-                throw new Exception($"Это не файл Excel! Расширение - {ext}.\n{filePath}");
-
-            ExcelFileInfo result = null;
-            using (Office.UsingExcel excel = new Office.UsingExcel())
-                result = excel.ReadExcelFile(filePath);
-
-            e.Result = result;
-        }
-        private void Bw_ExcelReader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Error != null)
+            try
             {
-                string message = e.Error.Message;
-                if (e.Error.InnerException != null)
+                string ext = System.IO.Path.GetExtension(path).ToLower();
+                if (!(ext == ".xls" || ext == ".xlsx" || ext == ".xlsm"))
+                    throw new Exception($"Это не файл Excel! Расширение - {ext}.\n{path}");
+
+                ExcelFileInfo result = await Task<ExcelFileInfo>.Factory.StartNew(() => 
                 {
-                    message += $"\n{e.Error.InnerException.Message}";
-                    message += $"\nStackTrace:\n{e.Error.InnerException.StackTrace}";
+                    using (Office.UsingExcel excel = new Office.UsingExcel())
+                        return excel.ReadExcelFileInfo(path);
+                });               
+
+                this.OpenedExcelFile = result;
+            }
+            catch (Exception ex)
+            {
+                string message = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    message += $"\n{ex.InnerException.Message}";
+                    message += $"\nStackTrace:\n{ex.InnerException.StackTrace}";
                 }
-                
                 MessageBox.Show(message, "Ошибка чтения Excel", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.OpenedExcelFile = null;
             }
-            else
-                this.OpenedExcelFile = (ExcelFileInfo)e.Result;
-        }        
-
-
+        }
         private void SplitFile(Office.SplitFileParameters splParams)
         {
             SetControlsEnabled(false);
             manager = new Office.SplitManager(mnuUseMultiThreads.Checked);
             manager.ProgressChanged += Manager_ProgressChanged;
             manager.SpliterCompleted += Manager_SpliterCompleted;
+            groupBox4.Enabled = true;
+            this.PrevFinishedParameters = null;
+
+            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal, Handle);
+            TaskbarManager.Instance.SetProgressValue(0, 100, Handle);
+
             manager.StartSplit(splParams);
         }
 
@@ -98,6 +107,7 @@ namespace SplitExcel
         {
             if (e.Error != null)
             {
+                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Error, Handle);
                 MessageBox.Show(e.Error.Message, "Ошибка разделения файла", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else if (e.Cancelled)
@@ -105,20 +115,31 @@ namespace SplitExcel
                 lblStatus.Text = $"Отменено. Обработано {manager.ItemsSaved} из { manager.ItemsNumber}";
             }
             else
-            {
+            {                
+                string message = $"Завершено успешно. Создано {manager.ItemsSaved} файлов.";
+                MessageBox.Show(message, "Завершено", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                SplitFileParameters p = e.Result as SplitFileParameters;
+                System.Diagnostics.Process.Start(System.IO.Path.GetDirectoryName(p.FilePath));
                 lblStatus.Text = "Обработка файла завершена";
+                this.PrevFinishedParameters = p;
             }
             SetControlsEnabled(true);
             btnStart.Enabled = true;
             btnStart.Text = "Начать";
             pbProgress.Style = ProgressBarStyle.Continuous;
+            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress, Handle);
             this.manager = null;
+            if (this.WaitForFinishingToExit) Application.Exit();
         }
 
         private void Manager_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             if (e.ProgressPercentage > -1)
+            {
                 pbProgress.Value = e.ProgressPercentage;
+                TaskbarManager.Instance.SetProgressValue(e.ProgressPercentage, 100, Handle);
+            }
+            
 
             if (e.UserState != null)
                 lblStatus.Text = e.UserState.ToString();
@@ -165,7 +186,8 @@ namespace SplitExcel
                 if (this.manager != null && manager.IsBusy)
                 {
                     b.Enabled = false;
-                    pbProgress.Style = ProgressBarStyle.Marquee;                    
+                    pbProgress.Style = ProgressBarStyle.Marquee;
+                    TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate, Handle);
                     this.manager.CancelAsync();
                 }
             }
@@ -174,13 +196,16 @@ namespace SplitExcel
                 try
                 {
                     SplitFileParameters param = GetSplitFileParameters();
+                    if (param.Equals(this.PrevFinishedParameters))
+                    {
+                        string mess = "Вы хотите порезать файл с теми же параметрами, как резали до этого. Вероятно, результат будет такой же.\n\nВы хотите продолжить?";
+                        if (MessageBox.Show(mess, "Повторить?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
+                    }
                     b.Text = "Отмена";
                     SplitFile(param);
                 }
                 catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-            }
-
-            
+            }            
         }
         private SplitFileParameters GetSplitFileParameters()
         {
@@ -204,7 +229,15 @@ namespace SplitExcel
                 MessageBox.Show("Дождитесь завершения операции.", "Программа в процессе..", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            string path = Dialogs.OpenExcelFileDialog();
+            string path = null;
+            using (OpenFileDialog f = new OpenFileDialog())
+            {
+                f.Filter = "Файлы Excel|*.xls;*.xlsx;*.xlsm";
+                f.Title = "Выберите файл";                                
+                if (f.ShowDialog(this) == DialogResult.OK)
+                    path = f.FileName;
+            }
+
             if (!string.IsNullOrEmpty(path))
             {
                 ReadExcelFileInfo(path);
@@ -218,14 +251,7 @@ namespace SplitExcel
         private void mnuUseMultiThreads_Click(object sender, EventArgs e)
         {
             mnuUseMultiThreads.Checked = !mnuUseMultiThreads.Checked;
-        }
-
-        private void mnuAbout_Click(object sender, EventArgs e)
-        {
-            About frmAbout = new About();
-            frmAbout.ShowDialog();
-        }
-
+        }     
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             if (OpenedExcelFile == null)
@@ -242,12 +268,60 @@ namespace SplitExcel
                 {
                     btnStart.Enabled = false;
                     pbProgress.Style = ProgressBarStyle.Marquee;
+                    TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate, Handle);
                     this.manager.CancelAsync();
                 }
+                this.WaitForFinishingToExit = true;
                 e.Cancel = true;
-            }
+            }            
+        }
 
-            
+        private void btnSettings_MouseDown(object sender, MouseEventArgs e)
+        {
+            Point screenPoint = btnSettings.PointToScreen(new Point(btnSettings.Left, btnSettings.Bottom));
+            if (screenPoint.Y + mnuSettings.Size.Height > Screen.PrimaryScreen.WorkingArea.Height)
+            {
+                mnuSettings.Show(btnSettings, new Point(0, -mnuSettings.Size.Height));
+            }
+            else
+            {
+                mnuSettings.Show(btnSettings, new Point(0, btnSettings.Height));
+            }
+        }
+
+        private void btnAbout_MouseDown(object sender, MouseEventArgs e)
+        {
+            Point screenPoint = btnSettings.PointToScreen(new Point(btnSettings.Left, btnSettings.Bottom));
+            if (screenPoint.Y + mnuSettings.Size.Height > Screen.PrimaryScreen.WorkingArea.Height)
+            {
+                mnuAbout.Show(btnSettings, new Point(0, -mnuSettings.Size.Height));
+            }
+            else
+            {
+                mnuAbout.Show(btnSettings, new Point(0, btnSettings.Height));
+            }
+        }
+
+        private void mnuShowAbout_Click(object sender, EventArgs e)
+        {
+            new About().ShowDialog(this);
+        }
+
+        private void mnuSendLetter_Click(object sender, EventArgs e)
+        {
+            string mailto = string.Format("mailto:{0}?Subject={1}", "support@oohelp.net", "Message from app: SplitExcel");
+            mailto = System.Uri.EscapeUriString(mailto);
+            System.Diagnostics.Process.Start(mailto);
+        }
+
+        private void mnuHelp_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://oohelp.net/splitexcel/#splitexcel_howto");
+        }
+
+        private void MnuCheckUpdates_Click(object sender, EventArgs e)
+        {
+            this._updater.DoUpdate(Updater.UpdateMethod.Manual);
         }
     }
 }
