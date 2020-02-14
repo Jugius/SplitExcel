@@ -198,7 +198,7 @@ namespace SplitExcel
                     SplitFileParameters param = GetSplitFileParameters();
                     if (param.Equals(this.PrevFinishedParameters))
                     {
-                        string mess = "Вы хотите порезать файл с теми же параметрами, как резали до этого. Вероятно, результат будет такой же.\n\nВы хотите продолжить?";
+                        const string mess = "Вы хотите порезать файл с теми же параметрами, как резали до этого. Вероятно, результат будет такой же.\n\nВы хотите продолжить?";
                         if (MessageBox.Show(mess, "Повторить?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
                     }
                     b.Text = "Отмена";
@@ -309,7 +309,7 @@ namespace SplitExcel
 
         private void mnuSendLetter_Click(object sender, EventArgs e)
         {
-            string mailto = string.Format("mailto:{0}?Subject={1}", "support@oohelp.net", "Message from app: SplitExcel");
+            string mailto = @"mailto:support@oohelp.net?Subject=Message from app: SplitExcel";
             mailto = System.Uri.EscapeUriString(mailto);
             System.Diagnostics.Process.Start(mailto);
         }

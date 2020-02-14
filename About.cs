@@ -20,7 +20,7 @@ namespace SplitExcel
             this.Icon = app.ApplicationIcon;
             pictureAppImage.Image = app.ApplicationImage;
             var version = app.Version;
-            lblVersion.Text = "Версия: " + version.Major + "." + version.Minor + (version.Build != 0 ? $" (build {version.Build})" : null);
+            lblVersion.Text = "Версия: " + version.Major.ToString() + "." + version.Minor.ToString() + (version.Build != 0 ? $" (build {version.Build})" : null);
             lblCopyright.Text = GetAssemblyCopyright(app.ApplicationAssembly);
             linkWWW.Text = $"Страница {app.ApplicationName}";
             linkEmail.Text = "Написать нам";
