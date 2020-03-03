@@ -5,7 +5,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace SplitExcel.Office
 {
-    internal class SplitThread : IExcelProcessor
+    internal sealed class SplitThread : IExcelProcessor
     {               
         private SplitFileParameters Parameters { get; }
 
@@ -68,11 +68,11 @@ namespace SplitExcel.Office
                 ReleaseUnmanaged();
             }
         }
-        private string ParseStringToFileName(string sourse)
+        private static string ParseStringToFileName(string sourse)
         {
             string str = sourse;
-            str = str.Replace("\\", "-");
-            str = str.Replace("/", "-");
+            str = str.Replace('\\', '-');
+            str = str.Replace('/', '-');
             str = str.Replace("\"", "");
             foreach (char c in System.IO.Path.GetInvalidFileNameChars())
             {

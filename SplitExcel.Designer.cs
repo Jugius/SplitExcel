@@ -59,9 +59,9 @@
             this.mnuAbout = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuSendLetter = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuCheckUpdates = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuShowAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuCheckUpdates = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -372,7 +372,7 @@
             this.toolStripSeparator1,
             this.mnuShowAbout});
             this.mnuAbout.Name = "mnuSettings";
-            this.mnuAbout.Size = new System.Drawing.Size(205, 120);
+            this.mnuAbout.Size = new System.Drawing.Size(205, 98);
             // 
             // mnuHelp
             // 
@@ -388,6 +388,13 @@
             this.mnuSendLetter.Text = "Обратная связь";
             this.mnuSendLetter.Click += new System.EventHandler(this.mnuSendLetter_Click);
             // 
+            // mnuCheckUpdates
+            // 
+            this.mnuCheckUpdates.Name = "mnuCheckUpdates";
+            this.mnuCheckUpdates.Size = new System.Drawing.Size(204, 22);
+            this.mnuCheckUpdates.Text = "Проверить обновления";
+            this.mnuCheckUpdates.Click += new System.EventHandler(this.MnuCheckUpdates_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
@@ -399,13 +406,6 @@
             this.mnuShowAbout.Size = new System.Drawing.Size(204, 22);
             this.mnuShowAbout.Text = "О программе";
             this.mnuShowAbout.Click += new System.EventHandler(this.mnuShowAbout_Click);
-            // 
-            // mnuCheckUpdates
-            // 
-            this.mnuCheckUpdates.Name = "mnuCheckUpdates";
-            this.mnuCheckUpdates.Size = new System.Drawing.Size(204, 22);
-            this.mnuCheckUpdates.Text = "Проверить обновления";
-            this.mnuCheckUpdates.Click += new System.EventHandler(this.MnuCheckUpdates_Click);
             // 
             // SplitExcel
             // 
@@ -427,6 +427,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SplitExcel";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SplitExcel_FormClosing);
+            this.Shown += new System.EventHandler(this.SplitExcel_Shown);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);

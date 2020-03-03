@@ -91,9 +91,13 @@
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>.\Microsoft.WindowsAPICodePack.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
       <HintPath>.\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />

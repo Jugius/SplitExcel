@@ -5,7 +5,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace SplitExcel.Office
 {
-    internal class UsingExcel : IExcelProcessor, IDisposable
+    internal sealed class UsingExcel : IExcelProcessor, IDisposable
     {           
         internal ExcelFileInfo ReadExcelFileInfo(string fileName)
         {
@@ -39,15 +39,15 @@ namespace SplitExcel.Office
         }
         private ExcelSheet GetSheetInfo(Excel.Worksheet sheet)
         {
-            int RowsUsed = -1;
-            int ColsUsed = -1;
-            ExcelSheet result = new Office.ExcelSheet();
-            result.Name = sheet.Name;
-            result.Index = sheet.Index;
+            ExcelSheet result = new Office.ExcelSheet
+            {
+                Name = sheet.Name,
+                Index = sheet.Index
+            };
             Excel.Range workRange = sheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);
 
-            RowsUsed = workRange.Row;
-            ColsUsed = workRange.Column;
+            int RowsUsed = workRange.Row;
+            int ColsUsed = workRange.Column;
             Release(workRange);
 
             result.LastCell = new ExcelLastCell(RowsUsed, ColsUsed);
@@ -74,7 +74,7 @@ namespace SplitExcel.Office
                     if (val != null)
                     {
                         string value = val.ToString().ToUpper().Trim();
-                        if (value != string.Empty)
+                        if (value?.Length != 0)
                             splitValues.Add(value);
                     }                        
                 }

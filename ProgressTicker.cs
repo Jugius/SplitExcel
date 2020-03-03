@@ -6,7 +6,7 @@ namespace SplitExcel.Tools
         /// <summary>
         /// Прогресс в процентах (1-100)
         /// </summary>
-        public int Progress { get; }
+        public int Progress => TicksDone * 100 / TicksTotal;
         /// <summary>
         /// Количество шагов сделано
         /// </summary>
@@ -15,9 +15,8 @@ namespace SplitExcel.Tools
         /// Количество шагов всего
         /// </summary>
         public int TicksTotal { get; }
-        public ProgressData(int progress, int ticksDone, int ticksTotal)
+        public ProgressData(int ticksDone, int ticksTotal)
         {
-            this.Progress = progress;
             this.TicksDone = ticksDone;
             this.TicksTotal = ticksTotal;
         }
@@ -27,10 +26,10 @@ namespace SplitExcel.Tools
         public delegate void ProgressChangedEventHandler(ProgressData data);
         public event ProgressChangedEventHandler ProgressChanged;
 
-        int Length;
-        int Step;
-        int Flag;
-        int Updated;
+        readonly int Length;
+        readonly int Step;
+        private int Flag = 0;
+        private int Updated = 0;
         public int Ticks { get { return Updated; } }
 
         /// <summary>
@@ -42,7 +41,6 @@ namespace SplitExcel.Tools
         {
             this.Length = expectedTicks;
             this.Step = stepInPersent * expectedTicks / 100;
-            this.Flag = this.Updated = 0;
         }
         public void Tick()
         {
@@ -52,7 +50,7 @@ namespace SplitExcel.Tools
             {
                 int pers = Updated * 100 / Length;
                 if (pers == 0) pers++;
-                ProgressChanged?.Invoke(new ProgressData(pers, Updated, Length));
+                ProgressChanged?.Invoke(new ProgressData(Updated, Length));
                 Flag = 0;
             }
         }

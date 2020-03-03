@@ -54,7 +54,6 @@ namespace SplitExcel
             this.Icon = Properties.Resources.Excel_icon;
             OpenedExcelFile = null;
             _updater = new Updater.Updater(this);
-            _updater.DoUpdate( global::Updater.UpdateMethod.Automatic);
         }
         public SplitExcel(string filePath) : this()
         {
@@ -322,6 +321,11 @@ namespace SplitExcel
         private void MnuCheckUpdates_Click(object sender, EventArgs e)
         {
             this._updater.DoUpdate(Updater.UpdateMethod.Manual);
+        }
+
+        private void SplitExcel_Shown(object sender, EventArgs e)
+        {
+            _updater.DoUpdate(global::Updater.UpdateMethod.DownloadAndUpdateOnRequest);
         }
     }
 }

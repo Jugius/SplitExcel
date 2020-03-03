@@ -9,7 +9,7 @@ namespace SplitExcel.Office
         protected Excel.Workbook xlWorkBook = null;
         protected Excel.Worksheet xlWorkSheet = null;
 
-        static object locker = new object();
+        static readonly object locker = new object();
 
         private System.Globalization.CultureInfo oldCultureInfo;
 
@@ -39,14 +39,13 @@ namespace SplitExcel.Office
             xlApp.EnableEvents = true;
             xlApp.DisplayAlerts = true;
             xlApp.Quit();
-            Release(xlApp);
         }
         internal static Excel.Workbook OpenWorkbook(Excel.Application xlApp, string filePath, bool readOnly = false)
         {
             if (xlApp == null)
                 throw new Exception("Ошибка чтения файла Excel. Приложение не инициализировано (xlApp = null)");
 
-            Excel.Workbook book = null;
+            Excel.Workbook book; ;
             try
             {
                 lock (locker)
@@ -58,6 +57,7 @@ namespace SplitExcel.Office
             {
                 throw new Exception("Ошибка чтения файла Excel.", ex);
             }
+
             if (book == null)
                 throw new Exception("Ошибка чтения файла Excel (xlWorkBook = null).");
 
@@ -89,15 +89,17 @@ namespace SplitExcel.Office
         }
         protected void Release(object sender)
         {
-            try
+            if (sender != null)
             {
-                if (sender != null)
+                try
                 {
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(sender);
+                }
+                finally
+                {
                     sender = null;
                 }
-            }
-            catch (Exception) { sender = null; }
+            }                
         }
 
         #endregion
