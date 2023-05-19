@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using SoftwareManagement.Updater;
 
 namespace SplitExcel
 {
@@ -15,7 +16,7 @@ namespace SplitExcel
         private SplitFileParameters PrevFinishedParameters = null;
         private bool WaitForFinishingToExit = false;
 
-        private readonly Updater.Updater _updater;
+        private readonly ApplicationDeployment Updater;
 
         SplitManager manager;
 
@@ -53,7 +54,7 @@ namespace SplitExcel
             InitializeComponent();
             this.Icon = Properties.Resources.Excel_icon;
             OpenedExcelFile = null;
-            _updater = new Updater.Updater(this);
+            this.Updater = new ApplicationDeployment(this);
         }
         public SplitExcel(string filePath) : this()
         {
@@ -303,12 +304,12 @@ namespace SplitExcel
 
         private void mnuShowAbout_Click(object sender, EventArgs e)
         {
-            new About().ShowDialog(this);
+            new About(this).ShowDialog(this);
         }
 
         private void mnuSendLetter_Click(object sender, EventArgs e)
         {
-            string mailto = @"mailto:support@oohelp.net?Subject=Message from app: SplitExcel";
+            string mailto = $"mailto:{"jugius@gmail.com"}?Subject={"Message from app: SplitExcel"}";
             mailto = System.Uri.EscapeUriString(mailto);
             System.Diagnostics.Process.Start(mailto);
         }
@@ -318,14 +319,11 @@ namespace SplitExcel
             System.Diagnostics.Process.Start("http://oohelp.net/splitexcel/#splitexcel_howto");
         }
 
-        private void MnuCheckUpdates_Click(object sender, EventArgs e)
-        {
-            this._updater.DoUpdate(Updater.UpdateMethod.Manual);
-        }
+        private void MnuCheckUpdates_Click(object sender, EventArgs e) => Task.Run(() => this.Updater.UpdateApplication(UpdateMethod.Manual));
 
         private void SplitExcel_Shown(object sender, EventArgs e)
         {
-            _updater.DoUpdate(global::Updater.UpdateMethod.DownloadAndUpdateOnRequest);
+            Task.Run(() => Updater.UpdateApplication(UpdateMethod.Automatic));
         }
     }
 }

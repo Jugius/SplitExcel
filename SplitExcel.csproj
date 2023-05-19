@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SplitExcel</RootNamespace>
     <AssemblyName>SplitExcel</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
@@ -106,7 +106,7 @@
     <Reference Include="System.XML" />
     <Reference Include="Updater, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Updater\Updater\bin\Release\Updater.exe</HintPath>
+      <HintPath>..\..\..\ProjectsPublish\SoftwareManagement.Updater.NetFramework.WinForms\Updater.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

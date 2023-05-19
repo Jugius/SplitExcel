@@ -8,36 +8,27 @@ namespace SplitExcel
     public partial class About : Form
     {
         public const string ApplicationSite = @"https://www.oohelp.net/splitexcel/";
-        public const string SupportEmail = @"support@oohelp.net";
         public About()
         {
             InitializeComponent();
         }
-        public void ShowDialog(Updater.IUpdatableApplication app)
+        public About(SplitExcel app) : this()
         {
             this.Text = $"О программе {app.ApplicationName}";
             lblProgramName.Text = app.ApplicationName;
-            this.Icon = app.ApplicationIcon;
-            pictureAppImage.Image = app.ApplicationImage;
+            this.Icon = app.Icon;
+            //pictureAppImage.Image = Properties.Resources.Excel_image;
             var version = app.Version;
-            lblVersion.Text = "Версия: " + version.Major.ToString() + "." + version.Minor.ToString() + (version.Build != 0 ? $" (build {version.Build})" : null);
-            lblCopyright.Text = GetAssemblyCopyright(app.ApplicationAssembly);
+            lblVersion.Text = "Версия: " + version.Major + "." + version.Minor +
+                (version.Build != 0 ? $" (build {version.Build}" +
+                (version.Revision > 0 ? $" rev. {version.Revision}" : null) + ")" : null);
+            lblCopyright.Text = GetAssemblyCopyright(Assembly.GetExecutingAssembly());
             linkWWW.Text = $"Страница {app.ApplicationName}";
-            linkEmail.Text = "Написать нам";
-
-            base.ShowDialog(app.Context);
         }
 
         private void LinkWWW_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start(About.ApplicationSite);
-        }
-
-        private void LinkEmail_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            string mailto = $"mailto:{About.SupportEmail}?Subject=Сообщение {lblProgramName.Text}";
-            mailto = System.Uri.EscapeUriString(mailto);
-            System.Diagnostics.Process.Start(mailto);
         }
 
         private string GetAssemblyCopyright(Assembly assembly)
