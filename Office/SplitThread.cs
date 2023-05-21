@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using OfficeOpenXml;
+using System.Collections.Generic;
 using System.ComponentModel;
-using Excel = Microsoft.Office.Interop.Excel;
+
 
 
 namespace SplitExcel.Office
 {
-    internal sealed class SplitThread : IExcelProcessor
-    {               
+    internal sealed class SplitThread 
+    {
+        static readonly object locker = new object();
         private SplitFileParameters Parameters { get; }
 
         internal SplitThread(SplitFileParameters splitParameters)
@@ -22,50 +24,33 @@ namespace SplitExcel.Office
             string filename = System.IO.Path.GetFileNameWithoutExtension(Parameters.FilePath);
             string fileDir = System.IO.Path.GetDirectoryName(Parameters.FilePath);
 
-            try
+            int splitColumnNumber = UsingExcel.GetColumnNumber(Parameters.ColumnSplit);
+            e.Result = this;
+            foreach (string splitVal in splitValues)
             {
-                InitializeExcelApplication();
-                e.Result = this;
-
-                object val = string.Empty;
-
-                foreach (string splitVal in splitValues)
+                if (bw.CancellationPending)
                 {
-                    if (bw.CancellationPending)
-                    {
-                        e.Cancel = true;
-                        break;
-                    }
-                    this.xlWorkBook = IExcelProcessor.OpenWorkbook(this.xlApp, this.Parameters.FilePath, true);
-                    this.xlWorkSheet = (Excel.Worksheet)xlWorkBook.Sheets[Parameters.SheetIndex];
-
-                    for (int i = Parameters.RowEnd; i >= Parameters.RowBegin; i--)
-                    {
-                        val = xlWorkSheet.Range[Parameters.ColumnSplit + i].Value;
-                        if (val == null || val.ToString().ToUpper().Trim() != splitVal)
-                            ((Excel.Range)xlWorkSheet.Rows[i, System.Reflection.Missing.Value]).Delete(Excel.XlDeleteShiftDirection.xlShiftUp);
-                        bw.ReportProgress(0);
-                    }
-                    xlWorkBook.SaveAs(fileDir + @"/" + ParseStringToFileName(filename + "_" + splitVal) + fileExt);
-                    xlWorkBook.Close();
-                    bw.ReportProgress(0, splitVal);
+                    e.Cancel = true;
+                    break;
                 }
 
-                ExitExcelApplication();
-            }
-            catch
-            {
-                if (xlWorkBook != null)
-                    xlWorkBook.Close();
+                using (ExcelPackage excel = new ExcelPackage(Parameters.FilePath))
+                {
+                    var sheet = excel.Workbook.Worksheets[Parameters.SheetIndex];
 
-                if (xlApp != null)
-                    ExitExcelApplication();
+                    for (int row = Parameters.RowEnd; row >= Parameters.RowBegin; row--)
+                    {
+                        string value = sheet.Cells[row, splitColumnNumber].GetValue<string>();
+                        if (string.IsNullOrWhiteSpace(value) || !splitVal.Equals(value.Trim(), System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            sheet.DeleteRow(row);
+                        }
+                        bw.ReportProgress(0);
+                    }
 
-                throw;
-            }
-            finally
-            {
-                ReleaseUnmanaged();
+                    excel.SaveAs(fileDir + @"/" + ParseStringToFileName(filename + "_" + splitVal) + fileExt);
+                }
+                bw.ReportProgress(0, splitVal);
             }
         }
         private static string ParseStringToFileName(string sourse)

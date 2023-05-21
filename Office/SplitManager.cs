@@ -46,12 +46,9 @@ namespace SplitExcel.Office
         private void Bw_ExcelReader_DoWork(object sender, DoWorkEventArgs e)
         {
             List<string> list = new List<string>();
-            SplitFileParameters p = (SplitFileParameters)e.Argument;         
+            SplitFileParameters p = (SplitFileParameters)e.Argument;
 
-            using (Office.UsingExcel usXl = new Office.UsingExcel())
-            {
-                list = usXl.GetSplitValues(p);
-            }
+            list = UsingExcel.GetSplitValues(p);
 
             if (list.Count == 0)
                 throw new Exception("Пустой диапазон или ошибка чтения критериев");
@@ -140,7 +137,7 @@ namespace SplitExcel.Office
             }
             else if(!this.IsCancelled)
             {
-                (e.Result as SplitThread).Dispose();
+                
             }
             this.ThreadsFinished++;
             if (ThreadsFinished == ThreadsNumber)
