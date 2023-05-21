@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using SoftwareManagement.Updater;
+using System.IO;
+using System.Collections.Generic;
 
 namespace SplitExcel
 {
     public partial class SplitExcel : Form
     {
+        private static readonly HashSet<string> fileExtentions = 
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".xlsx", ".xlsm" };
+
         private Office.ExcelFileInfo _openedExcelFile = null;
         private SplitFileParameters PrevFinishedParameters = null;
         private bool WaitForFinishingToExit = false;
@@ -58,21 +63,20 @@ namespace SplitExcel
         }
         public SplitExcel(string filePath) : this()
         {
-            ReadExcelFileInfo(filePath);
+            if(File.Exists(filePath))
+                ReadExcelFileInfo(filePath);
         }
         private async void ReadExcelFileInfo(string path)
         {
             try
             {
-                string ext = System.IO.Path.GetExtension(path).ToLower();
-                if (!(ext == ".xls" || ext == ".xlsx" || ext == ".xlsm"))
-                    throw new Exception($"Это не файл Excel! Расширение - {ext}.\n{path}");
-
-                ExcelFileInfo result = await Task<ExcelFileInfo>.Factory.StartNew(() => 
+                string ext = System.IO.Path.GetExtension(path);
+                if(!fileExtentions.Contains(ext))
                 {
-                    using (Office.UsingExcel excel = new Office.UsingExcel())
-                        return excel.ReadExcelFileInfo(path);
-                });               
+                    throw new Exception($"Работа с файлами этого формата ({ext}) не подерживается!.\n{path}");
+                }
+
+                ExcelFileInfo result = await Task.Run(() => UsingExcel.ReadExcelFileInfo(path));
 
                 this.OpenedExcelFile = result;
             }
@@ -232,7 +236,7 @@ namespace SplitExcel
             string path = null;
             using (OpenFileDialog f = new OpenFileDialog())
             {
-                f.Filter = "Файлы Excel|*.xls;*.xlsx;*.xlsm";
+                f.Filter = "Файлы Excel|*.xlsx;*.xlsm";
                 f.Title = "Выберите файл";                                
                 if (f.ShowDialog(this) == DialogResult.OK)
                     path = f.FileName;

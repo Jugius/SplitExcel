@@ -1,100 +1,89 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace SplitExcel.Office
 {
-    internal sealed class UsingExcel : IExcelProcessor, IDisposable
-    {           
-        internal ExcelFileInfo ReadExcelFileInfo(string fileName)
+    internal static class UsingExcel
+    {
+        private static readonly HashSet<string> allowedFileExtentions =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".xlsx", ".xlsm" };
+
+        public static ExcelFileInfo ReadExcelFileInfo(string fileName)
         {
-            try
+            if (!allowedFileExtentions.Contains(Path.GetExtension(fileName)))
+                throw new Exception("Неподдерживаемый формат. Поддерживаются только файлы Office 2007 и выше, формата .xlsx и .xlsm");
+
+            ExcelFileInfo result;
+
+            using (ExcelPackage excel = new ExcelPackage(fileName))
             {
-                InitializeExcelApplication();
-                this.xlWorkBook = IExcelProcessor.OpenWorkbook(this.xlApp, fileName, true);
+                if (excel.Workbook?.Worksheets?.Count == 0)
+                    throw new Exception("Не найдены листы в файле!");
 
-                List<ExcelSheet> sheets = new List<ExcelSheet>();
-                Excel.Sheets xlWorkSheets = xlWorkBook.Sheets;
-
-                foreach (Excel.Worksheet sheet in xlWorkSheets)
+                List<ExcelSheet> sheets = new List<ExcelSheet>(excel.Workbook.Worksheets.Count);
+                foreach (var sheet in excel.Workbook.Worksheets)
+                {
                     sheets.Add(GetSheetInfo(sheet));
-
-                ExcelFileInfo result = new ExcelFileInfo(fileName, sheets);
-
-                xlWorkBook.Close();
-                ExitExcelApplication();
-                return result;
+                }
+                result = new ExcelFileInfo(fileName, sheets);
             }
-            catch
-            {
-                if (xlWorkBook != null)
-                    xlWorkBook.Close();
 
-                if (xlApp != null)
-                    ExitExcelApplication();
-
-                throw;
-            }
+            return result;
         }
-        private ExcelSheet GetSheetInfo(Excel.Worksheet sheet)
+        private static ExcelSheet GetSheetInfo(ExcelWorksheet sheet)
         {
             ExcelSheet result = new Office.ExcelSheet
             {
                 Name = sheet.Name,
-                Index = sheet.Index
+                Index = sheet.Index,
             };
-            Excel.Range workRange = sheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);
 
-            int RowsUsed = workRange.Row;
-            int ColsUsed = workRange.Column;
-            Release(workRange);
-
-            result.LastCell = new ExcelLastCell(RowsUsed, ColsUsed);
-
-            Release(workRange);
+            if (sheet.Dimension == null)
+            {
+                result.LastCell = new ExcelLastCell(1, 1);
+            }
+            else
+            {
+                result.LastCell = new ExcelLastCell(sheet.Dimension.End.Row, sheet.Dimension.End.Column);
+            }
 
             return result;
         }
-        internal List<string> GetSplitValues(SplitFileParameters splitParams)
+        internal static List<string> GetSplitValues(SplitFileParameters splitParams)
         {
-            List<string> splitValues = new List<string>();
-            try
+            HashSet<string> values = new HashSet<string>(splitParams.RowEnd - splitParams.RowBegin + 1, StringComparer.OrdinalIgnoreCase);
+            int splitColumnNumber = GetColumnNumber(splitParams.ColumnSplit);
+
+            using (ExcelPackage excel = new ExcelPackage(splitParams.FilePath))
             {
-                InitializeExcelApplication();
-                this.xlWorkBook = IExcelProcessor.OpenWorkbook(this.xlApp, splitParams.FilePath, true);
+                var sheet = excel.Workbook.Worksheets[splitParams.SheetIndex];
 
-                Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Sheets[splitParams.SheetIndex];
-
-                object val = string.Empty;
-
-                for (int i = splitParams.RowBegin; i <= splitParams.RowEnd; i++)
+                for (int row = splitParams.RowBegin; row <= splitParams.RowEnd; row++)
                 {
-                    val = xlWorkSheet.Range[splitParams.ColumnSplit + i].Value;
-                    if (val != null)
-                    {
-                        string value = val.ToString().ToUpper().Trim();
-                        if (value?.Length != 0)
-                            splitValues.Add(value);
-                    }                        
+                    string value = sheet.Cells[row, splitColumnNumber].GetValue<string>();
+                    if (!string.IsNullOrWhiteSpace(value))
+                        values.Add(value.Trim());
                 }
-                xlWorkBook.Close();
-                ExitExcelApplication();
-
-                splitValues = splitValues.Distinct().ToList();
-                splitValues.Sort();
-                return splitValues;
             }
-            catch
+            return values.OrderBy(a => a).ToList();
+        }
+        public static int GetColumnNumber(string colAdress)
+        {
+            int[] digits = new int[colAdress.Length];
+            for (int i = 0; i < colAdress.Length; ++i)
             {
-                if (xlWorkBook != null)
-                    xlWorkBook.Close();
-
-                if (xlApp != null)
-                    ExitExcelApplication();
-
-                throw;
+                digits[i] = Convert.ToInt32(colAdress[i]) - 64;
             }
-        }        
+            int mul = 1; int res = 0;
+            for (int pos = digits.Length - 1; pos >= 0; --pos)
+            {
+                res += digits[pos] * mul;
+                mul *= 26;
+            }
+            return res;
+        }
     }
 }
